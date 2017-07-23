@@ -2,13 +2,16 @@ package resources;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.ws.rs.Path;
 
 import entity.Cidade;
+import entity.EstadoQtd;
 import persistence.CidadeDao;
+import persistence.EstadoQtdDao;
 
 @Path("/cidades")
 public class RestCidade {
@@ -16,6 +19,7 @@ public class RestCidade {
 	private static Scanner leitor;
 	String caminhoArq = "WebContent/cidades.csv";
 	CidadeDao cidadeDao = new CidadeDao();
+	EstadoQtdDao estadoQtdDao = new EstadoQtdDao();
 
 	private void lerArquivoCSV() {
 		try {
@@ -76,11 +80,24 @@ public class RestCidade {
 			return null;
 		}
 	}
+	
+	private List<EstadoQtd> estadosComMaiorEMenorQtdCidades(){
+		try {
+			 List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
+			 List<EstadoQtd> estados = new ArrayList<EstadoQtd>();
+			 estados.add(lista.get(0));
+			 estados.add(lista.get(lista.size() - 1));
+			 return estados;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void main(String[] args) {
 //		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new RestCidade().buscarCapitaisOrdenadas());
+			System.out.println(new RestCidade().estadosComMaiorEMenorQtdCidades());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
