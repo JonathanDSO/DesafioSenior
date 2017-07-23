@@ -8,6 +8,9 @@ import java.util.Scanner;
 
 import javax.ws.rs.Path;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import entity.Cidade;
 import entity.EstadoQtd;
 import persistence.CidadeDao;
@@ -103,11 +106,26 @@ public class RestCidade {
 			return null;
 		}
 	}
+	
+	private String buscarCidadesPorEstado(String estado){
+		try {
+			String query = "select * from cidade where uf = '" + estado + "'";
+			List<Cidade> cidades = cidadeDao.consultaPorQuery(query);
+			List<String> nomes = new ArrayList<String>();
+			for (Cidade cidade : cidades) {
+				nomes.add(cidade.getName());
+			}
+			return new GsonBuilder().setPrettyPrinting().create().toJson(nomes);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void main(String[] args) {
 //		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new RestCidade().buscarEstadosQtdCidades());
+			System.out.println(new RestCidade().buscarCidadesPorEstado("RJ"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
