@@ -2,6 +2,7 @@ package resources;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.ws.rs.Path;
@@ -65,13 +66,22 @@ public class RestCidade {
 			e.printStackTrace();
 		}
 	}
+	
+	private List<Cidade> buscarCapitaisOrdenadas(){
+		try {
+			String query = "select * from cidade where capital = true order by name";
+			return cidadeDao.consultaPorQuery(query);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void main(String[] args) {
-		new RestCidade().lerArquivoCSV();
+//		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new CidadeDao().findAll());
+			System.out.println(new RestCidade().buscarCapitaisOrdenadas());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

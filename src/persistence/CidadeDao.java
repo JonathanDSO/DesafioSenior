@@ -83,5 +83,19 @@ public class CidadeDao extends Dao {
 		stmt.close();
 		close();
 	}
+	
+	public List<Cidade> consultaPorQuery(String query) throws Exception {
+		open();
+		stmt = con.prepareStatement(query);
+		rs = stmt.executeQuery();
+		List<Cidade> cidades = new ArrayList<Cidade>();
+		while (rs.next()) {
+			cidades.add(new Cidade(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4), rs.getDouble(5),
+					rs.getDouble(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10)));
+		}
+		stmt.close();
+		close();
+		return cidades;
+	}
 
 }
