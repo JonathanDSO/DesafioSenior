@@ -98,9 +98,36 @@ public class CidadeDao extends Dao {
 		return cidades;
 	}
 	
+	public Cidade consultaCidadeMaisDistante(String query) throws Exception {
+		open();
+		stmt = con.prepareStatement(query);
+		rs = stmt.executeQuery();
+		Cidade cidade = new Cidade();
+		if (rs.next()) {
+			cidade = new Cidade(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4), rs.getDouble(5),
+					rs.getDouble(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getDouble(11));
+		}
+		stmt.close();
+		close();
+		return cidade;
+	}
+	
 	public Integer consultarQuantidadeDistintaPorColuna(String coluna) throws Exception {
 		open();
 		stmt = con.prepareStatement("select count(distinct("+coluna+")) from cidade");
+		rs = stmt.executeQuery();
+		Integer qtd = null;
+		if (rs.next()) {
+			qtd = rs.getInt(1);
+		}
+		stmt.close();
+		close();
+		return qtd;
+	}
+	
+	public Integer consultarQuantidadeRegistros() throws Exception {
+		open();
+		stmt = con.prepareStatement("select count(*) from cidade");
 		rs = stmt.executeQuery();
 		Integer qtd = null;
 		if (rs.next()) {

@@ -20,6 +20,7 @@ public class Cidade implements Serializable {
 	private String alternative_names;
 	private String microregion;
 	private String mesoregion;
+	private Double distancia;
 
 	public Cidade() {
 	}
@@ -37,6 +38,22 @@ public class Cidade implements Serializable {
 		this.alternative_names = alternative_names;
 		this.microregion = microregion;
 		this.mesoregion = mesoregion;
+	}
+
+	public Cidade(Integer ibge_id, String uf, String name, Boolean capital, Double lon, Double lat, String no_accents,
+			String alternative_names, String microregion, String mesoregion, Double distancia) {
+		super();
+		this.ibge_id = ibge_id;
+		this.uf = uf;
+		this.name = name;
+		this.capital = capital;
+		this.lon = lon;
+		this.lat = lat;
+		this.no_accents = no_accents;
+		this.alternative_names = alternative_names;
+		this.microregion = microregion;
+		this.mesoregion = mesoregion;
+		this.distancia = distancia;
 	}
 
 	@Override
@@ -122,6 +139,14 @@ public class Cidade implements Serializable {
 
 	public void setMesoregion(String mesoregion) {
 		this.mesoregion = mesoregion;
+	}
+
+	public Double getDistancia() {
+		return distancia;
+	}
+
+	public void setDistancia(Double distancia) {
+		this.distancia = distancia;
 	}
 
 }

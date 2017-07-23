@@ -147,11 +147,56 @@ public class RestCidade {
 			return null;
 		}
 	}
+	
+	private Integer consultarQuantidadeRegistros() {
+		try {
+			return cidadeDao.consultarQuantidadeRegistros();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private List<Cidade> buscarAsDuasCidadesMaisDistanteUmaDaOutra() {
+		List<Cidade> cidadesMaisDistantes = new ArrayList<Cidade>();
+		Cidade cidade1 = null;
+		Cidade cidade2 = null;
+		Double distancia = 0.0;
+		
+		try {
+			List<Cidade> cidades = cidadeDao.findAll();
+			for(Cidade c1 : cidades){
+				String query = "	SELECT *,	" +
+						"	(6371 * acos(	" +
+						"	 cos( radians("+c1.getLat()+") )	" +
+						"	 * cos( radians( lat ) )	" +
+						"	 * cos( radians( lon ) - radians("+c1.getLon()+") )	" +
+						"	 + sin( radians("+c1.getLat()+") )	" +
+						"	 * sin( radians( lat ) ) ) ) as distancia	" +
+						"	FROM cidade	" +
+						"	ORDER BY distancia DESC	" +
+						"	LIMIT 1	";
+				Cidade c2 = cidadeDao.consultaCidadeMaisDistante(query);
+				if(c2.getDistancia() > distancia){
+					distancia = c2.getDistancia();
+					cidade1 = c1;
+					cidade2 = c2;
+				}
+			}
+			cidadesMaisDistantes.add(cidade1);
+			cidadesMaisDistantes.add(cidade2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cidadesMaisDistantes;
+	}
+	
+	
 
 	public static void main(String[] args) {
 		try {
-			new RestCidade().lerArquivoCSV();
-			System.out.println(new RestCidade().consultarQuantidadeDistintaPorColuna("name"));
+//			new RestCidade().lerArquivoCSV();
+			System.out.println(new RestCidade().buscarAsDuasCidadesMaisDistanteUmaDaOutra());
 			// new RestCidade().deletarCidade(3300100);
 		} catch (Exception e) {
 			e.printStackTrace();
