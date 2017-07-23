@@ -97,5 +97,20 @@ public class CidadeDao extends Dao {
 		close();
 		return cidades;
 	}
+	
+	public Integer consultarQuantidadeDistintaPorColuna(String coluna) throws Exception {
+		open();
+		stmt = con.prepareStatement("select count(distinct("+coluna+")) from cidade");
+		rs = stmt.executeQuery();
+		Integer qtd = null;
+		if (rs.next()) {
+			qtd = rs.getInt(1);
+		}
+		stmt.close();
+		close();
+		return qtd;
+	}
+	
+	
 
 }

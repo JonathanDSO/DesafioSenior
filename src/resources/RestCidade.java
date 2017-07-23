@@ -2,7 +2,6 @@ package resources;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,7 +9,6 @@ import java.util.Scanner;
 import javax.ws.rs.Path;
 
 import com.google.gson.GsonBuilder;
-import com.mysql.jdbc.StringUtils;
 
 import entity.Cidade;
 import entity.EstadoQtd;
@@ -37,9 +35,9 @@ public class RestCidade {
 				String[] valores = linhas.split(",");
 				Cidade cidade = new Cidade(new Integer(valores[0]), valores[1], valores[2], new Boolean(valores[3]),
 						new Double(valores[4]), new Double(valores[5]), valores[6], valores[7], valores[8], valores[9]);
-				
+
 				Cidade c = buscarCidadePorId(cidade.getIbge_id());
-				if(c != null){
+				if (c != null) {
 					atualizarCidade(cidade);
 				} else {
 					gravarCidade(cidade);
@@ -57,7 +55,7 @@ public class RestCidade {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void deletarCidade(Integer ibge_id) {
 		try {
 			cidadeDao.delete(ibge_id);
@@ -65,8 +63,8 @@ public class RestCidade {
 			e.printStackTrace();
 		}
 	}
-	
-	private Cidade buscarCidadePorId(Integer ibge_id){
+
+	private Cidade buscarCidadePorId(Integer ibge_id) {
 		try {
 			return cidadeDao.findById(ibge_id);
 		} catch (Exception e) {
@@ -74,16 +72,16 @@ public class RestCidade {
 			return null;
 		}
 	}
-	
-	private void atualizarCidade(Cidade cidade){
+
+	private void atualizarCidade(Cidade cidade) {
 		try {
 			cidadeDao.edit(cidade);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private List<Cidade> buscarCapitaisOrdenadas(){
+
+	private List<Cidade> buscarCapitaisOrdenadas() {
 		try {
 			String query = "select * from cidade where capital = true order by name";
 			return cidadeDao.consultaPorQuery(query);
@@ -92,31 +90,31 @@ public class RestCidade {
 			return null;
 		}
 	}
-	
-	private List<EstadoQtd> buscarEstadosComMaiorEMenorQtdCidades(){
+
+	private List<EstadoQtd> buscarEstadosComMaiorEMenorQtdCidades() {
 		try {
-			 List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
-			 List<EstadoQtd> estados = new ArrayList<EstadoQtd>();
-			 estados.add(lista.get(0));
-			 estados.add(lista.get(lista.size() - 1));
-			 return estados;
+			List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
+			List<EstadoQtd> estados = new ArrayList<EstadoQtd>();
+			estados.add(lista.get(0));
+			estados.add(lista.get(lista.size() - 1));
+			return estados;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	private List<EstadoQtd> buscarEstadosQtdCidades(){
+
+	private List<EstadoQtd> buscarEstadosQtdCidades() {
 		try {
-			 List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
-			 return lista;
+			List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
+			return lista;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	private String buscarCidadesPorEstado(String estado){
+
+	private String buscarCidadesPorEstado(String estado) {
 		try {
 			String query = "select * from cidade where uf = '" + estado + "'";
 			List<Cidade> cidades = cidadeDao.consultaPorQuery(query);
@@ -130,10 +128,10 @@ public class RestCidade {
 			return null;
 		}
 	}
-	
-	private List<Cidade> filtrarCidadesPorColuna(String coluna, String filtro){
+
+	private List<Cidade> filtrarCidadesPorColuna(String coluna, String filtro) {
 		try {
-			String query = "select * from cidade where "+coluna+" like '%"+filtro+"%'";
+			String query = "select * from cidade where " + coluna + " like '%" + filtro + "%'";
 			return cidadeDao.consultaPorQuery(query);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -141,14 +139,20 @@ public class RestCidade {
 		}
 	}
 
-	
-	
+	private Integer consultarQuantidadeDistintaPorColuna(String coluna) {
+		try {
+			return cidadeDao.consultarQuantidadeDistintaPorColuna(coluna);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void main(String[] args) {
-//		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new RestCidade().filtrarCidadesPorColuna("name","apo"));
-//			new RestCidade().deletarCidade(3300100);
+			new RestCidade().lerArquivoCSV();
+			System.out.println(new RestCidade().consultarQuantidadeDistintaPorColuna("name"));
+			// new RestCidade().deletarCidade(3300100);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
