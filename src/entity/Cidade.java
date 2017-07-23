@@ -7,13 +7,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.google.gson.GsonBuilder;
 
 @XmlRootElement
-public class Cidade implements Serializable{
+public class Cidade implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer ibge_id;
 	private String uf;
 	private String name;
-	private String capital;
+	private Boolean capital;
 	private Double lon;
 	private Double lat;
 	private String no_accents;
@@ -24,7 +24,7 @@ public class Cidade implements Serializable{
 	public Cidade() {
 	}
 
-	public Cidade(Integer ibge_id, String uf, String name, String capital, Double lon, Double lat, String no_accents,
+	public Cidade(Integer ibge_id, String uf, String name, Boolean capital, Double lon, Double lat, String no_accents,
 			String alternative_names, String microregion, String mesoregion) {
 		super();
 		this.ibge_id = ibge_id;
@@ -43,7 +43,7 @@ public class Cidade implements Serializable{
 	public String toString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(this);
 	}
- 
+
 	public Integer getIbge_id() {
 		return ibge_id;
 	}
@@ -68,11 +68,11 @@ public class Cidade implements Serializable{
 		this.name = name;
 	}
 
-	public String getCapital() {
+	public Boolean getCapital() {
 		return capital;
 	}
 
-	public void setCapital(String capital) {
+	public void setCapital(Boolean capital) {
 		this.capital = capital;
 	}
 
