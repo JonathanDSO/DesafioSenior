@@ -2,14 +2,15 @@ package resources;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.ws.rs.Path;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mysql.jdbc.StringUtils;
 
 import entity.Cidade;
 import entity.EstadoQtd;
@@ -129,12 +130,25 @@ public class RestCidade {
 			return null;
 		}
 	}
+	
+	private List<Cidade> filtrarCidadesPorColuna(String coluna, String filtro){
+		try {
+			String query = "select * from cidade where "+coluna+" like '%"+filtro+"%'";
+			return cidadeDao.consultaPorQuery(query);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	
+	
 
 	public static void main(String[] args) {
 //		new RestCidade().lerArquivoCSV();
 		try {
-//			System.out.println(new RestCidade().buscarCidadesPorEstado("RJ"));
-			new RestCidade().deletarCidade(3300100);
+			System.out.println(new RestCidade().filtrarCidadesPorColuna("name","apo"));
+//			new RestCidade().deletarCidade(3300100);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
