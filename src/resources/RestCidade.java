@@ -57,6 +57,14 @@ public class RestCidade {
 		}
 	}
 	
+	private void deletarCidade(Integer ibge_id) {
+		try {
+			cidadeDao.delete(ibge_id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private Cidade buscarCidadePorId(Integer ibge_id){
 		try {
 			return cidadeDao.findById(ibge_id);
@@ -125,7 +133,8 @@ public class RestCidade {
 	public static void main(String[] args) {
 //		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new RestCidade().buscarCidadesPorEstado("RJ"));
+//			System.out.println(new RestCidade().buscarCidadesPorEstado("RJ"));
+			new RestCidade().deletarCidade(3300100);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
