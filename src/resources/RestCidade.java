@@ -81,7 +81,7 @@ public class RestCidade {
 		}
 	}
 	
-	private List<EstadoQtd> estadosComMaiorEMenorQtdCidades(){
+	private List<EstadoQtd> buscarEstadosComMaiorEMenorQtdCidades(){
 		try {
 			 List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
 			 List<EstadoQtd> estados = new ArrayList<EstadoQtd>();
@@ -93,11 +93,21 @@ public class RestCidade {
 			return null;
 		}
 	}
+	
+	private List<EstadoQtd> buscarEstadosQtdCidades(){
+		try {
+			 List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
+			 return lista;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void main(String[] args) {
 //		new RestCidade().lerArquivoCSV();
 		try {
-			System.out.println(new RestCidade().estadosComMaiorEMenorQtdCidades());
+			System.out.println(new RestCidade().buscarEstadosQtdCidades());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
