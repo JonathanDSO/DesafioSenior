@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.google.gson.GsonBuilder;
-
 @XmlRootElement
 public class Cidade implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -54,11 +52,6 @@ public class Cidade implements Serializable {
 		this.microregion = microregion;
 		this.mesoregion = mesoregion;
 		this.distancia = distancia;
-	}
-
-	@Override
-	public String toString() {
-		return new GsonBuilder().setPrettyPrinting().create().toJson(this);
 	}
 
 	public Integer getIbge_id() {

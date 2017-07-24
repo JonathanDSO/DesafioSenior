@@ -114,7 +114,7 @@ public class CidadeDao extends Dao {
 	
 	public Integer consultarQuantidadeDistintaPorColuna(String coluna) throws Exception {
 		open();
-		stmt = con.prepareStatement("select count(distinct("+coluna+")) from cidade");
+		stmt = con.prepareStatement("select count(distinct("+coluna+")) as qtd from cidade");
 		rs = stmt.executeQuery();
 		Integer qtd = null;
 		if (rs.next()) {

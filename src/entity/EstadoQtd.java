@@ -1,7 +1,8 @@
 package entity;
 
-import com.google.gson.GsonBuilder;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class EstadoQtd {
 
 	private String uf;
@@ -16,11 +17,6 @@ public class EstadoQtd {
 		this.qtd = qtd;
 	}
 	
-	@Override
-	public String toString() {
-		return new GsonBuilder().setPrettyPrinting().create().toJson(this);
-	}
-
 	public String getUf() {
 		return uf;
 	}
