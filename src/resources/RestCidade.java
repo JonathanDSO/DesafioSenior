@@ -29,17 +29,10 @@ import persistence.EstadoQtdDao;
 public class RestCidade {
 
 	private static Scanner leitor;
-	private	String caminhoArq = "WebContent/cidades.csv";
+	private String caminhoArq = "WebContent/cidades.csv";
 	private CidadeDao cidadeDao = new CidadeDao();
 	private EstadoQtdDao estadoQtdDao = new EstadoQtdDao();
 
-	@GET
-	@Path("/teste")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Saida teste() {
-		return new Saida("Teste", "testado");
-	}
-	
 	@GET
 	@Path("/lerArquivo")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -56,7 +49,7 @@ public class RestCidade {
 				Cidade cidade = new Cidade(new Integer(valores[0]), valores[1], valores[2], new Boolean(valores[3]),
 						new Double(valores[4]), new Double(valores[5]), valores[6], valores[7], valores[8], valores[9]);
 
-				Cidade c = buscarCidadePorIdMethod(cidade.getIbge_id());
+				Cidade c = cidadeDao.findById(cidade.getIbge_id());
 				if (c != null) {
 					atualizarCidade(cidade);
 				} else {
@@ -69,7 +62,7 @@ public class RestCidade {
 			return new Saida("Erro", e.getMessage());
 		}
 	}
-	
+
 	@POST
 	@Path("/gravarCidade")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -102,19 +95,16 @@ public class RestCidade {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SaidaCidade buscarCidadePorId(@PathParam("ibge_id") Integer ibge_id) {
 		try {
-			Cidade cidade = buscarCidadePorIdMethod(ibge_id);
-			if(cidade != null){
+			Cidade cidade = cidadeDao.findById(ibge_id);
+			if (cidade != null) {
 				return new SaidaCidade(cidade, "Sucesso", "Cidade retornada");
+			} else {
+				return new SaidaCidade("Alerta", "Nenhuma cidade encontrada com o 'ibge_id' informado");
 			}
-			return new SaidaCidade("Alerta", "Nenhuma cidade encontrada com o 'ibge_id' informado");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaCidade("Erro", e.getMessage());
 		}
-	}
-	
-	private Cidade buscarCidadePorIdMethod(@PathParam("ibge_id") Integer ibge_id) throws Exception {
-		return cidadeDao.findById(ibge_id);
 	}
 
 	@PUT
@@ -138,7 +128,11 @@ public class RestCidade {
 		try {
 			String query = "select * from cidade where capital = true order by name";
 			List<Cidade> cidades = cidadeDao.consultaPorQuery(query);
-			return new SaidaCidades(cidades, "Sucesso", "Capitais retornadas");
+			if (cidades != null && cidades.size() > 0) {
+				return new SaidaCidades(cidades, "Sucesso", "Capitais retornadas");
+			} else {
+				return new SaidaCidades("Alerta", "Nenhuma capital encontrada");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaCidades("Erro", e.getMessage());
@@ -152,9 +146,14 @@ public class RestCidade {
 		try {
 			List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
 			List<EstadoQtd> estados = new ArrayList<EstadoQtd>();
-			estados.add(lista.get(0));
-			estados.add(lista.get(lista.size() - 1));
-			return new SaidaEstadoQtds(estados, "Sucesso", "Estados com maior e menor quantidades cidades, e quantidade de cidades retornadas");
+			if (lista != null && lista.size() > 0) {
+				estados.add(lista.get(0));
+				estados.add(lista.get(lista.size() - 1));
+				return new SaidaEstadoQtds(estados, "Sucesso",
+						"Estados com maior e menor quantidades cidades, e quantidade de cidades retornadas");
+			} else {
+				return new SaidaEstadoQtds("Alerta", "Nenhum estado encontrado");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaEstadoQtds("Erro", e.getMessage());
@@ -167,7 +166,12 @@ public class RestCidade {
 	public SaidaEstadoQtds buscarEstadosQtdCidades() {
 		try {
 			List<EstadoQtd> lista = estadoQtdDao.buscarEstadoEQuantidade();
-			return new SaidaEstadoQtds(lista, "Sucesso", "Estados e quantidades de cidades retornadas");
+			if (lista != null && lista.size() > 0) {
+				return new SaidaEstadoQtds(lista, "Sucesso", "Estados e quantidades de cidades retornadas");
+			} else {
+				return new SaidaEstadoQtds("Alerta", "Nenhum estado encontrado");
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaEstadoQtds("Erro", e.getMessage());
@@ -182,12 +186,17 @@ public class RestCidade {
 			String query = "select * from cidade where uf = '" + estado + "'";
 			List<Cidade> cidades = cidadeDao.consultaPorQuery(query);
 			List<Cidade> lista = new ArrayList<Cidade>();
-			for (Cidade cidade : cidades) {
-				Cidade c = new Cidade();
-				c.setName(cidade.getName());
-				lista.add(c);
+			if (cidades != null && cidades.size() > 0) {
+				for (Cidade cidade : cidades) {
+					Cidade c = new Cidade();
+					c.setName(cidade.getName());
+					lista.add(c);
+				}
+				return new SaidaCidades(cidades, "Sucesso", "Cidades de " + estado + " retornadas");
+			} else {
+				return new SaidaCidades("Alerta", "Não foram encontrados cidades para o estado: " + estado);
 			}
-			return new SaidaCidades(cidades, "Sucesso", "Cidades de "+estado+" retornadas");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaCidades("Erro", e.getMessage());
@@ -197,11 +206,17 @@ public class RestCidade {
 	@GET
 	@Path("/filtrarCidadesPorColuna/{coluna}/{filtro}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SaidaCidades filtrarCidadesPorColuna(@PathParam("coluna") String coluna, @PathParam("filtro") String filtro) {
+	public SaidaCidades filtrarCidadesPorColuna(@PathParam("coluna") String coluna,
+			@PathParam("filtro") String filtro) {
 		try {
 			String query = "select * from cidade where " + coluna + " like '%" + filtro + "%'";
 			List<Cidade> cidades = cidadeDao.consultaPorQuery(query);
-			return new SaidaCidades(cidades, "Sucesso", "Cidades retornadas");
+			if (cidades != null && cidades.size() > 0) {
+				return new SaidaCidades(cidades, "Sucesso", "Cidades retornadas");
+			} else {
+				return new SaidaCidades("Alerta", "Nenhuma cidade encontrada para o filtro informado");
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaCidades("Erro", e.getMessage());
@@ -214,26 +229,35 @@ public class RestCidade {
 	public SaidaQuantidadeRegistro consultarQuantidadeDistintaPorColuna(String coluna) {
 		try {
 			Integer quantidade = cidadeDao.consultarQuantidadeDistintaPorColuna(coluna);
-			return new SaidaQuantidadeRegistro(quantidade, "Sucesso", "Retornado a quantidade de registros únicos da coluna '"+coluna+"'");
+			if (quantidade != null && quantidade > 0) {
+				return new SaidaQuantidadeRegistro(quantidade, "Sucesso",
+						"Retornado a quantidade de registros únicos da coluna '" + coluna + "'");
+			} else {
+				return new SaidaQuantidadeRegistro("Alerta", "Nenhum registro encontrado");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaQuantidadeRegistro("Erro", e.getMessage());
 		}
 	}
-	
+
 	@GET
 	@Path("/consultarQuantidadeRegistros")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SaidaQuantidadeRegistro consultarQuantidadeRegistros() {
 		try {
 			Integer quantidade = cidadeDao.consultarQuantidadeRegistros();
-			return new SaidaQuantidadeRegistro(quantidade, "Sucesso", "Retornado a quantidade total de registros");
+			if (quantidade != null && quantidade > 0) {
+				return new SaidaQuantidadeRegistro(quantidade, "Sucesso", "Retornado a quantidade total de registros");
+			} else {
+				return new SaidaQuantidadeRegistro("Alerta", "Nenhum registro encontrado");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaQuantidadeRegistro("Erro", e.getMessage());
 		}
 	}
-	
+
 	@GET
 	@Path("/buscarAsDuasCidadesMaisDistanteUmaDaOutra")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -244,22 +268,26 @@ public class RestCidade {
 		Double distancia = 0.0;
 		try {
 			List<Cidade> cidades = cidadeDao.findAll();
-			for(Cidade c1 : cidades){
-				Cidade c2 = cidadeDao.consultaCidadeMaisDistante(c1.getLat(), c1.getLon());
-				if(c2.getDistancia() > distancia){
-					distancia = c2.getDistancia();
-					cidade1 = c1;
-					cidade2 = c2;
+			if (cidades != null && cidades.size() > 0) {
+				for (Cidade c1 : cidades) {
+					Cidade c2 = cidadeDao.consultaCidadeMaisDistante(c1.getLat(), c1.getLon());
+					if (c2.getDistancia() > distancia) {
+						distancia = c2.getDistancia();
+						cidade1 = c1;
+						cidade2 = c2;
+					}
 				}
+				cidadesMaisDistantes.add(cidade1);
+				cidadesMaisDistantes.add(cidade2);
+				return new SaidaCidades(cidadesMaisDistantes, "Sucesso",
+						"Retornada as duas cidades que são mais distantes uma da outra");
+			} else {
+				return new SaidaCidades("Alerta", "Nenhuma cidade encontrada");
 			}
-			cidadesMaisDistantes.add(cidade1);
-			cidadesMaisDistantes.add(cidade2);
-			return new SaidaCidades(cidadesMaisDistantes, "Sucesso", "Retornada as duas cidades que são mais distantes uma da outra");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SaidaCidades("Erro", e.getMessage());
 		}
-		
 	}
-	
+
 }
