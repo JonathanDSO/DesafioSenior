@@ -16,8 +16,17 @@
 
 Desafio proposto pela empresa Senior como etapa técnica de entrevista.
 
-# Collections no Postman
+# Informações úteis
+
+## Collections no Postman
 
 https://www.getpostman.com/collections/0aa10e7eec0f93d93746
 
 Os links estão como teste local utilizando a porta 8084 - http://localhost:8084/
+
+
+## Banco de Dados
+Utilizei como base de dados o **Mysql**
+
+## Servidor de testes
+Utilizei o Apache Tomcat v8.0
