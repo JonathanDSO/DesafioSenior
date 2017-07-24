@@ -107,7 +107,7 @@ public class RestCidade {
 		}
 	}
 
-	@PUT
+	@POST
 	@Path("/atualizarCidade")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
