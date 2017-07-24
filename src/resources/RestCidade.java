@@ -245,17 +245,7 @@ public class RestCidade {
 		try {
 			List<Cidade> cidades = cidadeDao.findAll();
 			for(Cidade c1 : cidades){
-				String query = "	SELECT *,	" +
-						"	(6371 * acos(	" +
-						"	 cos( radians("+c1.getLat()+") )	" +
-						"	 * cos( radians( lat ) )	" +
-						"	 * cos( radians( lon ) - radians("+c1.getLon()+") )	" +
-						"	 + sin( radians("+c1.getLat()+") )	" +
-						"	 * sin( radians( lat ) ) ) ) as distancia	" +
-						"	FROM cidade	" +
-						"	ORDER BY distancia DESC	" +
-						"	LIMIT 1	";
-				Cidade c2 = cidadeDao.consultaCidadeMaisDistante(query);
+				Cidade c2 = cidadeDao.consultaCidadeMaisDistante(c1.getLat(), c1.getLon());
 				if(c2.getDistancia() > distancia){
 					distancia = c2.getDistancia();
 					cidade1 = c1;

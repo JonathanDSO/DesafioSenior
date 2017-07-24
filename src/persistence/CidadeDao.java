@@ -98,8 +98,18 @@ public class CidadeDao extends Dao {
 		return cidades;
 	}
 	
-	public Cidade consultaCidadeMaisDistante(String query) throws Exception {
+	public Cidade consultaCidadeMaisDistante(Double lat, Double lon) throws Exception {
 		open();
+		String query = "	SELECT *,	" +
+				"	(6371 * acos(	" +
+				"	 cos( radians("+lat+") )	" +
+				"	 * cos( radians( lat ) )	" +
+				"	 * cos( radians( lon ) - radians("+lon+") )	" +
+				"	 + sin( radians("+lat+") )	" +
+				"	 * sin( radians( lat ) ) ) ) as distancia	" +
+				"	FROM cidade	" +
+				"	ORDER BY distancia DESC	" +
+				"	LIMIT 1	";
 		stmt = con.prepareStatement(query);
 		rs = stmt.executeQuery();
 		Cidade cidade = new Cidade();
